@@ -532,6 +532,13 @@ export const Plugin =  GObject.registerClass({
             switch (e) {
                 case 'on':
                     this.data['devices'][id]['switch'] = event['value'];
+                    if (! event['value']) {
+                        /* device reports it turned off (physical button,
+                           the Nanoleaf app, a schedule, or our own switch);
+                           stop mirroring so the reconnect backoff doesn't
+                           bring extControl mode back on behind the user */
+                        this.stopMirrorScreen(id);
+                    }
                     break;
 
                 case 'brightness':
@@ -947,11 +954,19 @@ export const Plugin =  GObject.registerClass({
     }
 
     switchSingle(id, value) {
+        if (! value) {
+            /* turning the device off ends screen mirroring for good, don't
+               let the reconnect backoff bring it back on */
+            this.stopMirrorScreen(id);
+        }
         this._devices[id].setDeviceState(value);
     }
 
     switchGroup(id, ids, value) {
         for (let i of ids) {
+            if (! value) {
+                this.stopMirrorScreen(i);
+            }
             this._devices[i].setDeviceState(value);
         }
     }
@@ -1036,6 +1051,10 @@ export const Plugin =  GObject.registerClass({
         }
 
         for (let i of ids) {
+            /* selecting any other effect ends screen mirroring for that
+               device; stop it explicitly so the reconnect backoff doesn't
+               fight the new effect back into extControl mode */
+            this.stopMirrorScreen(i);
             this._devices[i].setDeviceEffect(id);
         }
     }
