@@ -1,3 +1,9 @@
+## Version 28
+ * add GNOME 51 to metadata
+ * change api settings to be expander row
+ * rediscover devices IP if changed
+ * nanoleaf screen-mirror reconnecting on error
+ * fix notification, no collisons on uuid generation
 ## Version 27
  * REST API added
  * catch error on synchronous sending
