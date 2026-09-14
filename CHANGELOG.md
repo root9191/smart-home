@@ -1,3 +1,5 @@
+## Version 29
+ * fix timers
 ## Version 28
  * add GNOME 51 to metadata
  * change api settings to be expander row
