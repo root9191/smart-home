@@ -1027,6 +1027,11 @@ export const SmartHomePanelMenu = GObject.registerClass({
 
         Utils.logDebug(`Re-discovering device IP address for ${this.pluginName} - ${this.id}.`);
 
+        if (this._ipRediscoveryTimer) {
+            GLib.Source.remove(this._ipRediscoveryTimer);
+            this._ipRediscoveryTimer = null;
+        }
+
         /* safety net in case the plugin never calls the callback */
         this._ipRediscoveryTimer = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 30, () => {
             this._ipRediscoveryTimer = null;
@@ -1101,6 +1106,11 @@ export const SmartHomePanelMenu = GObject.registerClass({
      */
     _tryReconnect(seconds) {
         Utils.logDebug(`Trying reconnect ${this.pluginName} - ${this.id} in ${seconds} seconds.`);
+
+        if (this._reconnectTimer) {
+            GLib.Source.remove(this._reconnectTimer);
+            this._reconnectTimer = null;
+        }
 
         this._reconnectTimer = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, seconds, () => {
             if (! this._needsRebuild) {
@@ -1301,6 +1311,11 @@ export const SmartHomePanelMenu = GObject.registerClass({
 
         if (this.clearTimers) {
             this.clearTimers();
+        }
+
+        if (this._ipRediscoveryTimer) {
+            GLib.Source.remove(this._ipRediscoveryTimer);
+            this._ipRediscoveryTimer = null;
         }
 
         if (this._reconnectTimer) {

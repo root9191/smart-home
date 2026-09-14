@@ -600,6 +600,7 @@ export const Plugin =  GObject.registerClass({
                     done = true;
                     if (probeTimer) {
                         GLib.Source.remove(probeTimer);
+                        this._timers = Utils.removeFromArray(this._timers, probeTimer);
                         probeTimer = null;
                     }
                     probe.clear();
@@ -626,10 +627,12 @@ export const Plugin =  GObject.registerClass({
 
                 /* a dead IP does not always emit connection-problem */
                 probeTimer = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 8, () => {
+                    this._timers = Utils.removeFromArray(this._timers, probeTimer);
                     probeTimer = null;
                     finish();
                     return GLib.SOURCE_REMOVE;
                 });
+                this._timers.push(probeTimer);
 
                 probe.getShelly();
             }
